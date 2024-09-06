@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using PD324_01.Models;
 using PD324_01.Models.ViewModels;
 using PD324_01.Repositories;
@@ -81,7 +82,8 @@ namespace PD324_01.Controllers
 
             var cartItem = new CartListItem
             {
-                ProductId = id
+                ProductId = id,
+                Quantity = 1
             };
 
             var cartListItems = Session.GetCartListItems(HttpContext);
@@ -95,19 +97,7 @@ namespace PD324_01.Controllers
 
         public IActionResult RemoveFromCart(int id)
         {
-            var cartListItems = Session.GetCartListItems(HttpContext);
-
-            if (cartListItems.Count > 0)
-            {
-                var item = cartListItems.Find(i => i.ProductId == id);
-
-                if (item != null)
-                {
-                    cartListItems.Remove(item);
-                }
-
-                HttpContext.Session.Set(Settings.SessionKeyCart, cartListItems);
-            }
+            CartService.RemoveFromCart(HttpContext, id);
 
             return RedirectToAction("Index");
         }
